@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import '../widgets/custom_date_picker.dart' as custom_date_picker;
 
 enum InputType { date, time, both }
 
@@ -122,6 +123,7 @@ class FormBuilderDateTimePicker extends FormBuilderFieldDecoration<DateTime> {
   final Offset? anchorPoint;
   final EntryModeChangeCallback? onEntryModeChanged;
   final bool barrierDismissible;
+  final bool popOnDateSelection;
 
   /// Creates field for `Date`, `Time` and `DateTime` input
   FormBuilderDateTimePicker({
@@ -192,6 +194,7 @@ class FormBuilderDateTimePicker extends FormBuilderFieldDecoration<DateTime> {
     this.anchorPoint,
     this.onEntryModeChanged,
     this.barrierDismissible = true,
+    this.popOnDateSelection = false,
   }) : super(
          builder: (FormFieldState<DateTime?> field) {
            final state = field as FormBuilderDateTimePickerState;
@@ -327,7 +330,7 @@ class FormBuilderDateTimePickerState
   }
 
   Future<DateTime?> _showDatePicker(DateTime? currentValue) {
-    return showDatePicker(
+    return custom_date_picker.showDatePicker(
       context: context,
       selectableDayPredicate: widget.selectableDayPredicate,
       initialDatePickerMode: widget.initialDatePickerMode,
@@ -351,6 +354,7 @@ class FormBuilderDateTimePickerState
       anchorPoint: widget.anchorPoint,
       keyboardType: widget.keyboardType,
       barrierDismissible: widget.barrierDismissible,
+      popOnDateSelection: widget.popOnDateSelection,
     );
   }
 
