@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_form_builder/src/form_builder_field.dart';
+import 'package:flutter_form_builder/src/form_builder_field_decoration.dart';
+import 'package:flutter_form_builder/src/form_builder_field_option.dart';
+import 'package:flutter_form_builder/src/widgets/grouped_radio.dart';
 
 /// Field to select one value from a list of Radio Widgets
 class FormBuilderRadioGroup<T> extends FormBuilderFieldDecoration<T> {
@@ -38,6 +40,11 @@ class FormBuilderRadioGroup<T> extends FormBuilderFieldDecoration<T> {
     required super.name,
     required this.options,
     super.initialValue,
+    super.onChanged,
+    super.valueTransformer,
+    super.onReset,
+    super.restorationId,
+    super.errorBuilder,
     this.activeColor,
     this.controlAffinity = ControlAffinity.leading,
     this.disabled,
@@ -54,10 +61,6 @@ class FormBuilderRadioGroup<T> extends FormBuilderFieldDecoration<T> {
     this.wrapSpacing = 0.0,
     this.wrapTextDirection,
     this.wrapVerticalDirection = VerticalDirection.down,
-    super.onChanged,
-    super.valueTransformer,
-    super.onReset,
-    super.restorationId,
     this.itemDecoration,
   }) : super(
          builder: (FormFieldState<T?> field) {
@@ -74,10 +77,9 @@ class FormBuilderRadioGroup<T> extends FormBuilderFieldDecoration<T> {
                child: GroupedRadio<T>(
                  activeColor: activeColor,
                  controlAffinity: controlAffinity,
-                 disabled:
-                     state.enabled
-                         ? disabled
-                         : options.map((option) => option.value).toList(),
+                 disabled: state.enabled
+                     ? disabled
+                     : options.map((option) => option.value).toList(),
                  focusColor: focusColor,
                  hoverColor: hoverColor,
                  materialTapTargetSize: materialTapTargetSize,

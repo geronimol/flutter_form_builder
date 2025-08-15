@@ -264,6 +264,7 @@ class FormBuilderDropdown<T> extends FormBuilderFieldDecoration<T> {
     super.onReset,
     super.focusNode,
     super.restorationId,
+    super.errorBuilder,
     required this.items,
     this.isExpanded = true,
     this.isDense = true,
@@ -295,6 +296,7 @@ class FormBuilderDropdown<T> extends FormBuilderFieldDecoration<T> {
            final hasValue = items.map((e) => e.value).contains(field.value);
            return InputDecorator(
              decoration: state.decoration,
+             isEmpty: !hasValue,
              child: DropdownButton<T>(
                menuWidth: menuWidth,
                padding: padding,
@@ -304,26 +306,23 @@ class FormBuilderDropdown<T> extends FormBuilderFieldDecoration<T> {
                value: hasValue ? field.value : null,
                style: style,
                isDense: isDense,
-               disabledHint:
-                   hasValue
-                       ? items
-                           .firstWhere(
-                             (dropDownItem) =>
-                                 dropDownItem.value == field.value,
-                           )
-                           .child
-                       : disabledHint,
+               disabledHint: hasValue
+                   ? items
+                         .firstWhere(
+                           (dropDownItem) => dropDownItem.value == field.value,
+                         )
+                         .child
+                   : disabledHint,
                elevation: elevation,
                iconSize: iconSize,
                icon: icon,
                iconDisabledColor: iconDisabledColor,
                iconEnabledColor: iconEnabledColor,
-               onChanged:
-                   state.enabled
-                       ? (T? value) {
-                         field.didChange(value);
-                       }
-                       : null,
+               onChanged: state.enabled
+                   ? (T? value) {
+                       field.didChange(value);
+                     }
+                   : null,
                onTap: onTap,
                focusNode: state.effectiveFocusNode,
                autofocus: autofocus,
@@ -355,8 +354,9 @@ class _FormBuilderDropdownState<T>
     final oldValues = oldWidget.items.map((e) => e.value).toList();
     final currentlyValues = widget.items.map((e) => e.value).toList();
     final oldChilds = oldWidget.items.map((e) => e.child.toString()).toList();
-    final currentlyChilds =
-        widget.items.map((e) => e.child.toString()).toList();
+    final currentlyChilds = widget.items
+        .map((e) => e.child.toString())
+        .toList();
 
     if (!currentlyValues.contains(initialValue) &&
         !initialValue.emptyValidator()) {

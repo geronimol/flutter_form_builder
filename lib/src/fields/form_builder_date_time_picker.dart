@@ -125,6 +125,9 @@ class FormBuilderDateTimePicker extends FormBuilderFieldDecoration<DateTime> {
   final bool barrierDismissible;
   final bool popOnDateSelection;
 
+  /// If true, disables the picker so it's not shown when the field is tapped.
+  final bool disablePicker;
+
   /// Creates field for `Date`, `Time` and `DateTime` input
   FormBuilderDateTimePicker({
     super.key,
@@ -140,6 +143,7 @@ class FormBuilderDateTimePicker extends FormBuilderFieldDecoration<DateTime> {
     super.onReset,
     super.focusNode,
     super.restorationId,
+    super.errorBuilder,
     this.inputType = InputType.both,
     this.scrollPadding = const EdgeInsets.all(20.0),
     this.cursorWidth = 2.0,
@@ -193,6 +197,7 @@ class FormBuilderDateTimePicker extends FormBuilderFieldDecoration<DateTime> {
     this.selectableDayPredicate,
     this.anchorPoint,
     this.onEntryModeChanged,
+    this.disablePicker = false,
     this.barrierDismissible = true,
     this.popOnDateSelection = false,
   }) : super(
@@ -202,7 +207,7 @@ class FormBuilderDateTimePicker extends FormBuilderFieldDecoration<DateTime> {
            return FocusTraversalGroup(
              policy: ReadingOrderTraversalPolicy(),
              child: TextField(
-               onTap: () => state.showPicker(),
+               onTap: disablePicker ? null : () => state.showPicker(),
                textDirection: textDirection,
                textAlign: textAlign,
                textAlignVertical: textAlignVertical,
@@ -262,13 +267,15 @@ class FormBuilderDateTimePickerState
     _dateFormat = widget.format ?? _getDefaultDateTimeFormat();
     //setting this to value instead of initialValue here is OK since we handle initial value in the parent class
     final initVal = value;
-    _textFieldController.text =
-        initVal == null ? '' : _dateFormat.format(initVal);
+    _textFieldController.text = initVal == null
+        ? ''
+        : _dateFormat.format(initVal);
 
     effectiveFocusNode.onKeyEvent = (node, event) {
       if (event is KeyDownEvent &&
           event.logicalKey == LogicalKeyboardKey.space &&
-          node.hasFocus) {
+          node.hasFocus &&
+          !widget.disablePicker) {
         showPicker();
         return KeyEventResult.handled;
       }
@@ -366,20 +373,18 @@ class FormBuilderDateTimePickerState
         return Localizations.override(
           context: context,
           locale: widget.locale,
-          child:
-              transitionBuilder == null
-                  ? child
-                  : transitionBuilder(context, child),
+          child: transitionBuilder == null
+              ? child
+              : transitionBuilder(context, child),
         );
       };
     }
 
     return await showTimePicker(
       context: context,
-      initialTime:
-          currentValue != null
-              ? TimeOfDay.fromDateTime(currentValue)
-              : widget.initialTime,
+      initialTime: currentValue != null
+          ? TimeOfDay.fromDateTime(currentValue)
+          : widget.initialTime,
       builder: builder,
       useRootNavigator: widget.useRootNavigator,
       routeSettings: widget.routeSettings,
@@ -409,7 +414,8 @@ class FormBuilderDateTimePickerState
   @override
   void didChange(DateTime? value) {
     super.didChange(value);
-    _textFieldController.text =
-        (value == null) ? '' : _dateFormat.format(value);
+    _textFieldController.text = (value == null)
+        ? ''
+        : _dateFormat.format(value);
   }
 }
